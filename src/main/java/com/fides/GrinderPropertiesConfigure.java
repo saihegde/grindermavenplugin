@@ -303,6 +303,10 @@ public abstract class GrinderPropertiesConfigure extends AbstractMojo
 					    );
 				for (Iterator<org.sonatype.aether.artifact.Artifact> iterator = deps.iterator(); iterator.hasNext();) {
 					org.sonatype.aether.artifact.Artifact artifact = (org.sonatype.aether.artifact.Artifact) iterator.next();
+					System.out.println("Group Id -----> " + artifact.getGroupId());
+					System.out.println("Artifact Id -----> " + artifact.getArtifactId());
+					System.out.println("Resolved Version -----> " + artifact.getVersion());
+					System.out.println("Is Snapshot:::" + artifact.isSnapshot());
 					String projectDependencyJar = MavenUtilities.getPluginAbsolutePath(artifact.getGroupId(),artifact.getArtifactId(),artifact.getVersion());
 					projectDependencyJar = MavenUtilities.normalizePath(projectDependencyJar);
 					if(projectDependencies.length() > 0){

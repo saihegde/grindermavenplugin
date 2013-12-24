@@ -20,6 +20,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.String;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.io.xpp3.SettingsXpp3Reader;
@@ -72,35 +73,52 @@ public class MavenUtilities
 	 * 
 	 * @return the relative path of plugin jar
 	 */
-	public static String getPluginRelativePath(String groupId, String artifactId, String version) 
-	{
-		logger.debug("-------getPluginRelativePath------------");
-		logger.debug("----------------------------------------");
-		
-		logger.debug("-------------groupId: {}---------", groupId);
-		
-		String[] words = groupId.split("\\.");
-		
-		logger.debug("-------------words.length: {}------------", words.length);
-		
-		StringBuffer path = new StringBuffer();
-		for (String word : words) {
-			path.append(word).append(File.separator);
-			logger.debug("-------------word: {}------------", word);
-		}
-		
-		logger.debug("-------------path: {}------", path.toString());
-		
-		String artifactVersionPath = artifactId + File.separator +  version + File.separator;
-		String jarPath = artifactId + "-"+  version + ".jar";		
-		
-		logger.debug("-------------artifactVersionPath: {}------", artifactVersionPath);
-		logger.debug("-------------jarPath: {0}------", jarPath);
-		
-		logger.debug("----------------------------------------");
-		
-		return path.toString() + artifactVersionPath + jarPath;
+	public static String getPluginRelativePath(String groupId, String artifactId, String version){
+		return getRelativePath(groupId, artifactId, version, false);
 	}
+	
+	
+	/**
+     * @param groupId the groupId of the jar
+     * @param artifactId the artifactId of the jar
+     * @param version the version of the jar
+     * @param isSnapshot version
+     * 
+     * @return the relative path of jar
+     */
+    public static String getRelativePath(String groupId, String artifactId, String version, boolean isSnapshot) 
+    {
+        String SNAPSHOT_REGEX = "([0-9]{8}.[0-9]{6})-([0-9]+)$";
+        if(isSnapshot && !version.endsWith("SNAPSHOT")){
+            version = version.replaceAll(SNAPSHOT_REGEX, "SNAPSHOT");
+        }
+        logger.debug("-------getPluginRelativePath------------");
+        logger.debug("----------------------------------------");
+        
+        logger.debug("-------------groupId: {}---------", groupId);
+        
+        String[] words = groupId.split("\\.");
+        
+        logger.debug("-------------words.length: {}------------", words.length);
+        
+        StringBuffer path = new StringBuffer();
+        for (String word : words) {
+            path.append(word).append(File.separator);
+            logger.debug("-------------word: {}------------", word);
+        }
+        
+        logger.debug("-------------path: {}------", path.toString());
+        
+        String artifactVersionPath = artifactId + File.separator +  version + File.separator;
+        String jarPath = artifactId + "-"+  version + ".jar";       
+        
+        logger.debug("-------------artifactVersionPath: {}------", artifactVersionPath);
+        logger.debug("-------------jarPath: {0}------", jarPath);
+        
+        logger.debug("----------------------------------------");
+        
+        return path.toString() + artifactVersionPath + jarPath;
+    }
 
 	/**
 	 * @param groupId the groupId of the plugin
@@ -118,6 +136,11 @@ public class MavenUtilities
 	{
 		return getMavenLocalRepository() + File.separator + 
 				getPluginRelativePath(groupId, artifactId, version);
+	}
+	
+	public static String getProjectDependencyAbsolutePath(String groupId, String artifactId, String version, boolean isSnapshot) 
+	                throws FileNotFoundException, IOException, XmlPullParserException{
+	    return getMavenLocalRepository() + File.separator + getPluginRelativePath(groupId, artifactId, version);
 	}
 	
 	/**
@@ -145,4 +168,5 @@ public class MavenUtilities
 		normalized = path.replaceAll(Matcher.quoteReplacement("\\"), "/");
 		return normalized;
 	}
+	
 }
