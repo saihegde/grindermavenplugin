@@ -140,7 +140,7 @@ public class MavenUtilities
 	
 	public static String getProjectDependencyAbsolutePath(String groupId, String artifactId, String version, boolean isSnapshot) 
 	                throws FileNotFoundException, IOException, XmlPullParserException{
-	    return getMavenLocalRepository() + File.separator + getPluginRelativePath(groupId, artifactId, version);
+	    return getMavenLocalRepository() + File.separator + getRelativePath(groupId, artifactId, version, isSnapshot);
 	}
 	
 	/**
